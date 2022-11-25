@@ -56,7 +56,7 @@ const printLoadBar = (percentage) => {
 const run = async () => {
 	// print title
 	console.log(
-		clc.whiteBright("\nHello, world~ This is create-mitum-sdkjs! '◡'\n")
+		clc.whiteBright("\nHello, world~ This is create-mitum-sdk! '◡'\n")
 	);
 	console.log(
 		clc.whiteBright(

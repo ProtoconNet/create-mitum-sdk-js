@@ -37,9 +37,9 @@ You must run the command in the folder where the sdk file will be placed.
 ```sh
 $ create-mitum-sdk
 
-Hello, world~ This is create-mitum-sdkjs! '◡'
+Hello, world~ This is create-mitum-sdk! '◡'
 
-A new mitum sdk will be created in /Users/pmj/Desktop/project/protocon/create-mitum-sdkjs.
+A new mitum sdk will be created in /Users/user/Desktop/mitum-my-sdk.
 
 ...
 ```
