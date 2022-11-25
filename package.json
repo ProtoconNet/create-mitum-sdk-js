@@ -1,5 +1,5 @@
 {
-	"name": "create-mitum-sdkjs",
+	"name": "create-mitum-sdk",
 	"version": "0.0.1",
 	"description": "mitum sdk generator",
 	"type": "module",
