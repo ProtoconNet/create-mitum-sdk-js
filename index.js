@@ -371,7 +371,7 @@ const createReadme = () => {
 
 	replace({
 		regex: "__MODEL_S__",
-		replacement: opModelSmallKey().replace("-", " "),
+		replacement: opModelKey().toLowerCase(),
 		paths: [`${__dirname}/README.md`],
 		recursive: true,
 		silent: true,
@@ -405,10 +405,10 @@ const createReadme = () => {
 	execSync(`rm ${__dirname}/node-v.tmp`);
 	execSync(`rm ${__dirname}/npm-v.tmp`);
 
-	let indices = "\n";
-	operations.forEach((op) => {
+	let indices = "";
+	operations.forEach((op, idx) => {
 		const s = opSmallKey(op);
-		indices += `|-|[${s}](#${s})|\n`;
+		indices += idx < operations.length - 1 ? `|-|[${s}](#${s})|\n` : `|-|[${s}](#${s})|`;
 	});
 	replace({
 		regex: "__OP_INDICES__",
@@ -437,7 +437,7 @@ const createReadme = () => {
 		readmes += `const memo = ""; // any string\n`;
 		readmes += `const operation = new Operation(fact, memo, []);\n`;
 		readmes += `operation.sign(senderPrivate);\n`;
-		readmes += `\`\`\`\n\n`;
+		readmes += `\`\`\`\n`;
 	});
 	replace({
 		regex: "__OP_READMES__",
