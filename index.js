@@ -345,13 +345,13 @@ const createReadme = () => {
 		`cp $(npm root -g)/create-mitum-sdkjs/copies/README.md ${__dirname}/`
 	);
 
-    replace({
-        regex: "__PACKAGE_NAME__",
+	replace({
+		regex: "__PACKAGE_NAME__",
 		replacement: pkg.name,
 		paths: [`${__dirname}/README.md`],
 		recursive: true,
 		silent: true,
-    })
+	});
 
 	replace({
 		regex: "__MODEL__",
@@ -369,11 +369,25 @@ const createReadme = () => {
 		silent: true,
 	});
 
+	replace({
+		regex: "__MODEL_S__",
+		replacement: opModelSmallKey().replace("-", " "),
+		paths: [`${__dirname}/README.md`],
+		recursive: true,
+		silent: true,
+	});
+
 	execSync(`node --version > ${__dirname}/node-v.tmp`);
 	execSync(`npm --version > ${__dirname}/npm-v.tmp`);
 
-	const nodeV = fs.readFileSync(`${__dirname}/node-v.tmp`).toString("utf-8").trim();
-	const npmV = fs.readFileSync(`${__dirname}/npm-v.tmp`).toString("utf-8").trim();
+	const nodeV = fs
+		.readFileSync(`${__dirname}/node-v.tmp`)
+		.toString("utf-8")
+		.trim();
+	const npmV = fs
+		.readFileSync(`${__dirname}/npm-v.tmp`)
+		.toString("utf-8")
+		.trim();
 	replace({
 		regex: "__NODE_VERSION__",
 		replacement: nodeV,

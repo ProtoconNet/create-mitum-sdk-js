@@ -51,14 +51,15 @@ $ npm test
 |-|[From private key](#from-private-key)|
 |-|[From seed](#from-seed)|
 |2|[Get address from public keys](#get-address-from-public-keys)|
-|3|[Generate Currency Operations](#generate-currency-operations)|
-|4|[Generate __MODEL__ Operations](#generate-__MODELSN-operations)|__OP_INDICES__
+|3|[Generate currency operations](#generate-currency-operations)|
+|4|[Generate __MODEL_S__ Operations](#generate-__MODELSN-operations)|__OP_INDICES__
+|5|[Generate seal](#generate-seal)|
 |+|[Appendix](#appendix)|
 |+|[License])(#license)|
 
 To set the mitum version of all hints and the network id, refer to [Set version of hints](#set-version-of-hints) and [Set network id of operations](#set-network-id-of-operations).
 
-In addition, you can force the sdk to use extended msgs (which used in mitum2) to sign by set `forceExtendedMessage(true)`. See [Force to use extended messages](#force-to-use-extended-messages)
+To force certain signature types to be used for each operation, refer to [Force certain signature types](#force-certain-signature-types).
 
 ## Generate KeyPairs
 
@@ -233,50 +234,103 @@ See [mitum-sdkjs](https://github.com/ProtoconNet/mitum-sdkjs).
 
 ## Generate __MODEL__ Operations
 __OP_READMES__
+## Generate Seal
+
+__seal__ is not used in mitum2. Therefore, only operations with __sig-type: DEFAULT or M1__ can be added to seal.
+
+Here's how to create a seal:
+
+```js
+import { Seal } from "mitum-sdk";
+
+const signerPrivateKey = "KzFERQKNQbPA8cdsX5tCiCZvR4KgBou41cgtPk69XueFbaEjrczbmpr";
+
+const seal = new Seal([operation0, operation1, operation2, ...]); // Operation instances or json objects
+seal.sign(signerPrivateKey);
+
+// seal.dict(); seal object
+```
+
 ## Appendix
 
 ### Set version of hints
 
-To change the mitum version of every objects, add the following code to the part where the app is initialized.
+To change the mitum version of every objects, add the following code to the part where the app is initialized or required.
 
 The default version is `v0.0.1`.
 
 ```js
-import { useV } from "__PACKAGE_NAME__";
+import { useV } from "mitum-sdk";
 
 useV("v0.0.2");
 ```
 
 ### Set network id of operations
 
-To apply your network id to operations, add the following code to the part where the app is initialized.
+To apply your network id to operations, add the following code to the part where the app is initialized or required.
 
 The default id is `mitum`.
 
 ```js
-import { usedId } from "__PACKAGE_NAME__";
+import { usedId } from "mitum-sdk";
 
 useId("mainnet");
 ```
 
-### Force to use extended messages
+### Force certain signature types
 
-You can force the sdk to use extended msgs (which used in mitum2) for each signature.
+To force certain signature types to be used, add the following code to the part where the app is initialized or required.
 
 ```js
-import { forceExtendedMessage } from "__PACKAGE_NAME__";
+import { SIG_TYPE, useSigType } from "mitum-sdk";
 
-forceExtendedMessage(true);
+useSigType(SIG_TYPE.DEFAULT);
+useSigType(SIG_TYPE.M1); // equal to SIG_TYPE.DEFAULT
+useSigType(SIG_TYPE.M2); // signature used in mitum2
+useSigType(SIG_TYPE.M2_NODE);
+```
+
+In addition, you can force certain signature types to be used for each operation.
+
+```js
+import { SIG_TYPE } from "mitum-sdk";
+
+const op = new Operation(fact, memo);
+
+op.sigType = SIG_TYPE.DEFAULT // or SIG_TYPE.M1
+op.sigType = SIG_TYPE.M2;
+op.sigType = SIG_TYPE.M2_NODE;// node signature used in mitum2
 ```
 
 ### Options and other methods for __Operation__
 
-* If you want to include the `signed_at` of the new `factsign` in the message to be signed, set it as follows before signing.
+If __sig-type__ is one of __[DEFAULT, M1, M2]__, you don't need to include the option for the code `sign(priv, option)`.
+Just leave it `null`.
+
+However, if __sig-type__ is __M2_NODE__, you must include the option `{ node: "node address; string" }`.
 
 ```js
 const operation = new Operation(/* fact, etc... */);
-operation.forceExtendedMessage = true
-operation.sign(/* sender's private key */)
+
+operation.sign(/* sender's private key */, /* sig option */); // DEFAULT, M1, M2
+operation.sign(/* sender's private key */, { node: "node addres" }); // M2_NODE
+```
+
+* Set fact-signs without signing
+
+Make sure to set `sig-type` before setting the fact-signs.
+
+```js
+operaiton.sigType = SIG_TYPE.DEFAULT; // [ DEFAULT | M1 | M2 | M2_NODE ]
+operation.setFactSigns(/* FactSign instances */);
+```
+
+`FactSign` can be created by...
+
+```js
+import { FactSign } from "mitum-sdk";
+
+const factSign = new FactSign(/* node address */, /* signer */, /* signature; buffer */, /* signed_at */);
 ```
 
 * Send the operation directly to the network via Digest API.
@@ -291,50 +345,4 @@ operation.request(/* digest api address */, /* headers */); // `headers` can be 
 operation.export(/* file path */);
 ```
 
-### About timestamp
-
-__(1) Expression of timestamp__
-
-For blocks, seals, signatures, etc., mitum uses expressions `yyyy-MM-dd HH:mm:ss.* +0000 UTC` and `yyyy-MM-ddTHH:mm:ss.*Z` as the default.
-
-All other timezones are not allowed! Only +0000 timezone must be used for mitum.
-
-For example,
-
-a. When converting timestamps to byte format to generate block/seal/fact_sign hash
-    - convert string `2021-11-16 01:53:30.518 +0000 UTC` to byte format
-
-b. When are placed in block, seal, fact_sign of json files
-    - convert the timestamp to `2021-11-16T01:53:30.518Z` and put it in json
-
-To generate an operation hash, mitum concatenates byte arrays of network id, fact hash and each byte array of fact_sign.
-
-And to generate each byte array of fact_sign, mitum concatenates byte arrays of signer, signature digest and signed_at.
-
-Note that when converted to bytes, the format of `signed_at` is the same as `yyyy-MM-dd HH:mm:ss.* +0000 UTC`, but when put into json, it is displayed as `yyyy-MM-ddTHH:mm:ss.*Z`.
-
-__(2) How many decimal places to be expressed?__
-
-There is one more thing to note.
-
-First, there is no need to pay attention to the decimal places in the 'ss.*' part of the timestamp.
-
-Moreover, the timestamp can also be written without `.` or without decimal values below `.`.
-
-However, when converting timestamps to byte format, you should not add unnecessary zero(0) to floating point representations in seconds(ss.*).
-
-For example,
-
-a. `2021-11-16T01:53:30.518Z` is converted to `2021-11-16 01:53:30.518 +0000 UTC` without any change of the time itself.
-
-b. `2021-11-16T01:53:30.510Z` must be converted to `2021-11-16 01:53:30.51 +0000 UTC` when generating a hash.
-
-c. `2021-11-16T01:53:30.000Z` must be converted to `2021-11-16T01:53:30 +0000 UTC` when generating a hash.
-
-A timestamp with unnecessary zeros in the json file does not affect the processing of blocks, seals, or operations. Use caution when converting formats.
-
-In addition, no matter how precise the time is entered, all timestamps within the mitum code only support precision up to milliseconds when converting to buffer.
-
-For example, if you enter `2022-11-24T05:34:25.194332Z` in `signed_at`, the string `2022-11-24 05:34:25.194 +0000 UTC` is converted to a byte array to create a buffer of the fact signature.
-
-## License
+The `request` and `export` methods are also available in __Seal__ instance.
