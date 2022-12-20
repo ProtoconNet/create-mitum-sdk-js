@@ -297,7 +297,7 @@ const createIndexJs = () => {
 		`cp $(npm root -g)/create-mitum-sdkjs/copies/index.js ${__dirname}/`
 	);
 
-	operations.map((op) => {
+	operations.forEach((op) => {
 		const k = opKey(op);
 		const s = opSmallKey(op);
 		imports += `import { ${k}Item, ${k}Fact } from "./operations/${s}.js"\n`;
@@ -408,7 +408,10 @@ const createReadme = () => {
 	let indices = "";
 	operations.forEach((op, idx) => {
 		const s = opSmallKey(op);
-		indices += idx < operations.length - 1 ? `|-|[${s}](#${s})|\n` : `|-|[${s}](#${s})|`;
+		indices +=
+			idx < operations.length - 1
+				? `|-|[${s}](#${s})|\n`
+				: `|-|[${s}](#${s})|`;
 	});
 	replace({
 		regex: "__OP_INDICES__",
@@ -418,27 +421,52 @@ const createReadme = () => {
 		silent: true,
 	});
 
-	let readmes = "\n";
-	operations.forEach((op) => {
-		const k = opKey(op);
-		const s = opSmallKey(op);
-		const m = opModelKey();
-		const ms = opModelSmallKey();
-
-		readmes += `# ${s}\n\n`;
-		readmes += `__${s}__ is an operation to ....\n\n`;
-		readmes += `\`\`\`js\n`;
-		readmes += `import { TimeStamp, ${m}, Operation } from "${ms}-sdk";\n\n`;
-		readmes += `const token = new TimeStamp().UTC(); // any unique string\n`;
-		readmes += `const senderAddress = "DBa8N5of7LZkx8ngH4mVbQmQ2NHDd6gL2mScGfhAEqddmca";\n`;
-		readmes += `const senderPrivate = "KzFERQKNQbPA8cdsX5tCiCZvR4KgBou41cgtPk69XueFbaEjrczbmpr";\n\n`;
-		readmes += `const item = new ${m}.${k}Item();\n`;
-		readmes += `const fact = new ${m}.${k}Fact(token, senderAddress, [item]);\n\n`;
-		readmes += `const memo = ""; // any string\n`;
-		readmes += `const operation = new Operation(fact, memo, []);\n`;
-		readmes += `operation.sign(senderPrivate);\n`;
-		readmes += `\`\`\`\n`;
+	replace({
+		regex: "__COUNT__",
+		replacement: operations.length,
+		paths: [`${__dirname}/README.md`],
+		recursive: true,
+		silent: true,
 	});
+
+	const oplist = operations
+		.map((op) => `* ${opSmallKey(op)}`)
+		.join("\n");
+
+	replace({
+		regex: "__OPERATIONS__",
+		replacement: oplist,
+		paths: [`${__dirname}/README.md`],
+		recursive: true,
+		silent: true,
+	});
+
+	const readmes = operations
+		.map((op) => {
+			const k = opKey(op);
+			const s = opSmallKey(op);
+			const m = opModelKey();
+			const ms = opModelSmallKey();
+
+			let rm = "";
+			rm += `# ${s}\n\n`;
+			rm += `__${s}__ is an operation to ....\n\n`;
+			rm += `\`\`\`js\n`;
+			rm += `import { TimeStamp, ${m}, Operation } from "${ms}-sdk";\n\n`;
+			rm += `const token = new TimeStamp().UTC(); // any unique string\n`;
+			rm += `const senderAddress = "DBa8N5of7LZkx8ngH4mVbQmQ2NHDd6gL2mScGfhAEqddmca";\n`;
+			rm += `const senderPrivate = "KzFERQKNQbPA8cdsX5tCiCZvR4KgBou41cgtPk69XueFbaEjrczbmpr";\n\n`;
+			rm += `const item = new ${m}.${k}Item();\n`;
+			rm += `const fact = new ${m}.${k}Fact(token, senderAddress, [item]);\n\n`;
+			rm += `const memo = ""; // any string\n`;
+			rm += `const operation = new Operation(fact, memo, []);\n`;
+			rm += `operation.sign(senderPrivate);\n`;
+			rm += `\`\`\`\n`;
+
+			return rm;
+		})
+		.join("\n").trimEnd();
+
 	replace({
 		regex: "__OP_READMES__",
 		replacement: readmes,

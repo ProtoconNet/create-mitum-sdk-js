@@ -234,7 +234,15 @@ const stringAddress = address.toString(); // string address
 See [mitum-sdk-js](https://github.com/ProtoconNet/mitum-sdk-js).
 
 ## Generate __MODEL__ Operations
+
+____MODEL____ can handle a total of __COUNT__ operations.
+
+__OPERATIONS__
+
+See [Appendix](#appendix) for other instructions on how to use `Operation`.
+
 __OP_READMES__
+
 ## Generate Seal
 
 __seal__ is not used in mitum2. Therefore, only operations with __sig-type: DEFAULT or M1__ can be added to seal.
