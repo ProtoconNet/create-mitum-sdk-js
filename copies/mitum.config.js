@@ -4,16 +4,16 @@ export const MAX_AMOUNTS_IN_ITEM = 10;
 export const MAX_ITEMS_IN_FACT = 10;
 
 export const TEST_NODE = {
-	ecdsa: "KxaTHDAQnmFeWWik5MqWXBYkhvp5EpWbsZzXeHDdTDb5NE1dVw8wmpr",
-	schnorr: "EYc4WdFjP9qkgfwJZfnsVXeh827rsNppm5HUSjSDeMFFmpr",
+	m1: "KxaTHDAQnmFeWWik5MqWXBYkhvp5EpWbsZzXeHDdTDb5NE1dVw8wmpr",
+	m2: "EYc4WdFjP9qkgfwJZfnsVXeh827rsNppm5HUSjSDeMFFmpr",
 };
 
 export const TEST_GENESIS = {
-	ecdsa: {
+	m1: {
 		address: "DBa8N5of7LZkx8ngH4mVbQmQ2NHDd6gL2mScGfhAEqddmca",
 		private: "KzFERQKNQbPA8cdsX5tCiCZvR4KgBou41cgtPk69XueFbaEjrczbmpr",
 	},
-	schnorr: {
+	m2: {
 		address: "2E5qNuz9HsXydeTTdG1a3SZtj1iBWNUyVyfHYNcs4gSgmca",
 		private: "D4QPRNSTgYmgRymYVS1mLgyGtCbzeAPYhd5r4jNQahwampr",
 	},

@@ -66,8 +66,8 @@ To force certain signature types to be used for each operation, refer to [Force 
 
 ____PACKAGE_NAME____ supports two signature methods:
 
-- General ECDSA: v1
-- Schnorr DSA: v2
+- mitum1: v1
+- mitum2: v2
 
 You can generate key pairs in the following ways:
 
@@ -83,21 +83,21 @@ The following functions are prepared for key pair generation.
 ```js
 import { KPGen } from "__PACKAGE_NAME__";
 
-// ecdsa key pair
+// m1 key pair
 var ekp1 = KPGen.random();
 var ekp2 = KPGen.randomN(/* the number of keypairs */);
 var ekp3 = KPGen.fromPrivateKey(/* string private key */);
 var ekp4 = KPGen.fromSeed(/* string seed */);
 
-// schnorr key pair
-const { schnorr } = KPGen;
-var skp1 = schnorr.random();
-var skp2 = schnorr.randomN(/* the number of keypairs */);
-var skp3 = schnorr.fromPrivateKey(/* string private key */);
-var skp4 = schnorr.fromSeed(/* string seed */);
+// m2 key pair
+const { m2 } = KPGen;
+var skp1 = m2.random();
+var skp2 = m2.randomN(/* the number of keypairs */);
+var skp3 = m2.fromPrivateKey(/* string private key */);
+var skp4 = m2.fromSeed(/* string seed */);
 ```
 
-_If you need a key pair for schnorr signatures, use `KPGen.schnorr.(function)` instead of `KPGen.(function)`._
+_If you need a key pair for m2 signatures, use `KPGen.m2.(function)` instead of `KPGen.(function)`._
 
 ### Random KeyPair
 
@@ -252,10 +252,10 @@ Here's how to create a seal:
 ```js
 import { Seal } from "mitum-sdk";
 
-const signerPrivateKey = "KzFERQKNQbPA8cdsX5tCiCZvR4KgBou41cgtPk69XueFbaEjrczbmpr";
+const nodePrivateKey = "KzFERQKNQbPA8cdsX5tCiCZvR4KgBou41cgtPk69XueFbaEjrczbmpr";
 
 const seal = new Seal([operation0, operation1, operation2, ...]); // Operation instances or json objects
-seal.sign(signerPrivateKey);
+seal.sign(nodePrivateKey);
 
 // seal.dict(); seal object
 ```
