@@ -52,7 +52,7 @@ $ npm test
 |-|[From seed](#from-seed)|
 |2|[Get address from public keys](#get-address-from-public-keys)|
 |3|[Generate currency operations](#generate-currency-operations)|
-|4|[Generate __MODEL_S__ Operations](#generate-__MODEL_S__-operations)|
+|4|[Generate __MODEL_S__ operations](#generate-__MODEL_S__-operations)|
 __OP_INDICES__
 |5|[Generate seal](#generate-seal)|
 |+|[Appendix](#appendix)|

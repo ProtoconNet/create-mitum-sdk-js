@@ -13,7 +13,7 @@ import {
 
 import { EC_INVALID_FACT, EC_INVALID_ITEM, EC_INVALID_ITEMS } from "../base/error.js";
 
-const { error, assert } = err;
+const { assert } = err;
 
 export class __OP__Item extends __MODEL__Item {
 	constructor(val) {
@@ -42,24 +42,24 @@ export class __OP__Fact extends Fact {
 		super(HINT___OPB___OPERATION_FACT, token);
 		this.sender = new Address(sender);
 
-		assert(Array.isArray(items), error.type(EC_INVALID_ITEM, "not Array"));
+		assert(Array.isArray(items), err.type(EC_INVALID_ITEM, "not Array"));
 
 		assert(
 			items.length > 0 && items.length <= MAX_ITEMS_IN_FACT,
-			error.range(EC_INVALID_ITEMS, "array size out of range")
+			err.range(EC_INVALID_ITEMS, "array size out of range")
 		);
 
 		items.forEach((item) =>
 			assert(
 				item instanceof __OP__Item,
-				error.instance(EC_INVALID_ITEM, `not __OP__Item instance`)
+				err.instance(EC_INVALID_ITEM, `not __OP__Item instance`)
 			)
 		);
 
         const iarr = items.map((item) => {
 			assert(
 				item instanceof __OP__Item,
-				error.instance(
+				err.instance(
 					EC_INVALID_ITEM,
 					"not __OP__Item instance"
 				)
@@ -70,7 +70,7 @@ export class __OP__Fact extends Fact {
 		const iset = new Set(iarr);
 		assert(
 			iarr.length === iset.size,
-			error.duplicate(EC_INVALID_FACT, "duplicate items")
+			err.duplicate(EC_INVALID_FACT, "duplicate items")
 		);
 
 		this.items = items;

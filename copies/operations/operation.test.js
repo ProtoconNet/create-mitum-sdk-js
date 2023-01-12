@@ -2,7 +2,7 @@ import bs58 from "bs58";
 
 import { Operation } from "mitum-sdk";
 
-import { __OP__Item, __OP__Fact } from "./operation";
+import { __OP__Item, __OP__Fact } from "./__OPS__";
 import { TEST_GENESIS } from "../mitum.config";
 
 describe("test: __OPS__", () => {
@@ -14,7 +14,7 @@ describe("test: __OPS__", () => {
 			TEST_GENESIS.m1.address,
 			items
 		);
-		const operation = new Operation(fact, "", []);
+		const operation = new Operation(fact, "");
 		operation.sign(TEST_GENESIS.m1.private);
 
 		expect(bs58.encode(fact.hash)).toBe("/fact hash/");
@@ -28,7 +28,7 @@ describe("test: __OPS__", () => {
 			TEST_GENESIS.m2.address,
 			items
 		);
-		const operation = new Operation(fact, "", []);
+		const operation = new Operation(fact, "");
 		operation.sign(TEST_GENESIS.m2.private);
 
 		expect(bs58.encode(fact.hash)).toBe("/fact hash/");

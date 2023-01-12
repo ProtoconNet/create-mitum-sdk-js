@@ -449,7 +449,7 @@ const createReadme = () => {
 			const ms = opModelSmallKey();
 
 			let rm = "";
-			rm += `# ${s}\n\n`;
+			rm += `### ${s}\n\n`;
 			rm += `__${s}__ is an operation to ....\n\n`;
 			rm += `\`\`\`js\n`;
 			rm += `import { TimeStamp, ${m}, Operation } from "${ms}-sdk";\n\n`;
