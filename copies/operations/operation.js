@@ -11,7 +11,7 @@ import {
 	HINT___OPB___OPERATION_FACT,
 } from "../alias/operations.js";
 
-import { EC_INVALID_ITEM, EC_INVALID_ITEMS } from "../base/error.js";
+import { EC_INVALID_FACT, EC_INVALID_ITEM, EC_INVALID_ITEMS } from "../base/error.js";
 
 const { error, assert } = err;
 
@@ -31,6 +31,10 @@ export class __OP__Item extends __MODEL__Item {
 			val: this.val.dict(),
 		};
 	}
+
+    toString() {
+        return "" + this.val;
+    }
 }
 
 export class __OP__Fact extends Fact {
@@ -50,6 +54,23 @@ export class __OP__Fact extends Fact {
 				item instanceof __OP__Item,
 				error.instance(EC_INVALID_ITEM, `not __OP__Item instance`)
 			)
+		);
+
+        const iarr = items.map((item) => {
+			assert(
+				item instanceof __OP__Item,
+				error.instance(
+					EC_INVALID_ITEM,
+					"not __OP__Item instance"
+				)
+			);
+
+			return item.toString();
+		});
+		const iset = new Set(iarr);
+		assert(
+			iarr.length === iset.size,
+			error.duplicate(EC_INVALID_FACT, "duplicate items")
 		);
 
 		this.items = items;

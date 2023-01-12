@@ -1,4 +1,3 @@
-export const EC_NOT_BOOLEAN = "EC_NOT_BOOLEAN";
 export const EC_INVALID_ITEM = "EC_INVALID_ITEM";
 export const EC_INVALID_ITEMS = "EC_INVALID_ITEMS";
 export const EC_INVALID_FACT = "EC_INVALID_FACT";

@@ -281,7 +281,7 @@ To apply your network id to operations, add the following code to the part where
 The default id is `mitum`.
 
 ```js
-import { usedId } from "mitum-sdk";
+import { useId } from "mitum-sdk";
 
 useId("mainnet");
 ```
