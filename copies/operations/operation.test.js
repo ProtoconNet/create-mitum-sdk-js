@@ -15,7 +15,7 @@ describe("test: __OPS__", () => {
 			items
 		);
 		const operation = new Operation(fact, "");
-		operation.sign(TEST_GENESIS.m1.private);
+		operation.sign(TEST_GENESIS.m1.private, null);
 
 		expect(bs58.encode(fact.hash)).toBe("/fact hash/");
 	});
@@ -29,7 +29,7 @@ describe("test: __OPS__", () => {
 			items
 		);
 		const operation = new Operation(fact, "");
-		operation.sign(TEST_GENESIS.m2.private);
+		operation.sign(TEST_GENESIS.m2.private, null);
 
 		expect(bs58.encode(fact.hash)).toBe("/fact hash/");
 	});

@@ -1,17 +1,14 @@
-import bs58 from "bs58";
-
-import { Fact, Address, util, err } from "mitum-sdk";
+import { OperationFact, err } from "mitum-sdk";
 
 import { __MODEL__Item } from "./item.js";
 
-import { MAX_ITEMS_IN_FACT } from "../mitum.config.js";
 import {
 	HINT___OPB___ITEM,
 	HINT___OPB___OPERATION,
 	HINT___OPB___OPERATION_FACT,
 } from "../alias/operations.js";
 
-import { EC_INVALID_FACT, EC_INVALID_ITEM, EC_INVALID_ITEMS } from "../base/error.js";
+import { EC_INVALID_ITEM } from "../base/error.js";
 
 const { assert } = err;
 
@@ -37,17 +34,9 @@ export class __OP__Item extends __MODEL__Item {
     }
 }
 
-export class __OP__Fact extends Fact {
+export class __OP__Fact extends OperationFact {
 	constructor(token, sender, items) {
-		super(HINT___OPB___OPERATION_FACT, token);
-		this.sender = new Address(sender);
-
-		assert(Array.isArray(items), err.type(EC_INVALID_ITEM, "not Array"));
-
-		assert(
-			items.length > 0 && items.length <= MAX_ITEMS_IN_FACT,
-			err.range(EC_INVALID_ITEMS, "array size out of range")
-		);
+		super(HINT___OPB___OPERATION_FACT, token, sender, token);
 
 		items.forEach((item) =>
 			assert(
@@ -55,46 +44,6 @@ export class __OP__Fact extends Fact {
 				err.instance(EC_INVALID_ITEM, `not __OP__Item instance`)
 			)
 		);
-
-        const iarr = items.map((item) => {
-			assert(
-				item instanceof __OP__Item,
-				err.instance(
-					EC_INVALID_ITEM,
-					"not __OP__Item instance"
-				)
-			);
-
-			return item.toString();
-		});
-		const iset = new Set(iarr);
-		assert(
-			iarr.length === iset.size,
-			err.duplicate(EC_INVALID_FACT, "duplicate items")
-		);
-
-		this.items = items;
-		this.hash = this.hashing();
-	}
-
-	bytes() {
-		return Buffer.concat([
-			this.token.bytes(),
-			this.sender.bytes(),
-			Buffer.concat(
-				this.items.sort(util.sortBuf).map((item) => item.bytes())
-			),
-		]);
-	}
-
-	dict() {
-		return {
-			_hint: this.hint.toString(),
-			hash: bs58.encode(this.hash),
-			token: this.token.toString(),
-			sender: this.sender.toString(),
-			items: this.items.sort(sortBuf).map((item) => item.dict()),
-		};
 	}
 
 	get opHint() {

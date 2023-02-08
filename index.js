@@ -40,6 +40,7 @@ const pkg = {
 
 let model = "currency";
 let operations = [];
+let nodeOperations = [];
 
 const printLoadBar = (percentage) => {
 	process.stdout.write(
@@ -76,7 +77,10 @@ const run = async () => {
 	createMitumConfig();
 	createAlias();
 	createError();
+
+	createNodeOperations();
 	createOperations();
+
 	createIndexJs();
 	createReadme();
 
@@ -108,6 +112,16 @@ const inputPackage = () => {
 		.trim()
 		.toLowerCase()
 		.replace(model.includes("-") ? /-/gi : /\s/gi, " ");
+	nodeOperations = rl
+		.question(print("node operations", ""))
+		.split(",")
+		.filter((op) => op)
+		.map((op) => {
+			op = op.trim();
+			op = op.toLowerCase();
+			op = op.replace(op.includes("-") ? /-/gi : /\s/gi, " ");
+			return op;
+		});
 	operations = rl
 		.question(print("operations", ""))
 		.split(",")
@@ -128,6 +142,9 @@ const createPackageJson = () => {
 
 	console.log(clc.blueBright("::model"));
 	console.log(clc.whiteBright(model) + "\n");
+
+	console.log(clc.blueBright("::node operations"));
+	console.log(clc.whiteBright(nodeOperations.join(", ")) + "\n");
 
 	console.log(clc.blueBright("::operations"));
 	console.log(clc.whiteBright(operations.join(", ")) + "\n");
@@ -174,14 +191,14 @@ const drawLoad = () => {
 
 const createBabel = () => {
 	execSync(
-		`cp $(npm root -g)/create-mitum-sdkjs/copies/babel.config.cjs ${__dirname}/`
+		`cp $(npm root -g)/create-mitum-sdk/copies/babel.config.cjs ${__dirname}/`
 	);
 	printLoadBar(10);
 };
 
 const createMitumConfig = () => {
 	execSync(
-		`cp $(npm root -g)/create-mitum-sdkjs/copies/mitum.config.js ${__dirname}/`
+		`cp $(npm root -g)/create-mitum-sdk/copies/mitum.config.js ${__dirname}/`
 	);
 	printLoadBar(15);
 };
@@ -199,9 +216,17 @@ const createAlias = () => {
 		alias += `export const HINT_${b}_OPERATION = "${m}-${s}-operation"\n\n`;
 	});
 
+	nodeOperations.forEach((op) => {
+		const b = opBigKey(op);
+		const m = opModelSmallKey();
+		const s = opSmallKey(op);
+		alias += `export const HINT_${b}_OPERATION_FACT = "${m}-${s}-operation-fact"\n`;
+		alias += `export const HINT_${b}_OPERATION = "${m}-${s}-operation"\n\n`;
+	});
+
 	fs.writeFileSync(`${__dirname}/alias/operations.js`, alias);
 
-	printLoadBar(20);
+	printLoadBar(25);
 };
 
 const opKey = (op) =>
@@ -222,29 +247,26 @@ const opModelSmallKey = () => `mitum-${model}`;
 const createError = () => {
 	ensureDirSync(`${__dirname}/base`);
 	execSync(
-		`cp $(npm root -g)/create-mitum-sdkjs/copies/base/error.js ${__dirname}/base/`
+		`cp $(npm root -g)/create-mitum-sdk/copies/base/error.js ${__dirname}/base/`
 	);
-	printLoadBar(25);
+	printLoadBar(35);
 };
 
-const createOperations = () => {
+const createNodeOperations = () => {
 	ensureDirSync(`${__dirname}/operations`);
-	const modelPath = [`${__dirname}/operations/item.js`];
 
-	execSync(
-		`cp $(npm root -g)/create-mitum-sdkjs/copies/operations/item.js ${__dirname}/operations/`
-	);
+	const modelPath = [];
 
-	operations.forEach((op) => {
+	nodeOperations.forEach((op) => {
 		const o = opKey(op);
 		const b = opBigKey(op);
 		const s = opSmallKey(op);
 
 		execSync(
-			`cp $(npm root -g)/create-mitum-sdkjs/copies/operations/operation.js ${__dirname}/operations/${s}.js`
+			`cp $(npm root -g)/create-mitum-sdk/copies/operations/node-operation.js ${__dirname}/operations/${s}.js`
 		);
 		execSync(
-			`cp $(npm root -g)/create-mitum-sdkjs/copies/operations/operation.test.js ${__dirname}/operations/${s}.test.js`
+			`cp $(npm root -g)/create-mitum-sdk/copies/operations/node-operation.test.js ${__dirname}/operations/${s}.test.js`
 		);
 
 		replace({
@@ -289,15 +311,83 @@ const createOperations = () => {
 	printLoadBar(50);
 };
 
+const createOperations = () => {
+	ensureDirSync(`${__dirname}/operations`);
+	const modelPath = [`${__dirname}/operations/item.js`];
+
+	execSync(
+		`cp $(npm root -g)/create-mitum-sdk/copies/operations/item.js ${__dirname}/operations/`
+	);
+
+	operations.forEach((op) => {
+		const o = opKey(op);
+		const b = opBigKey(op);
+		const s = opSmallKey(op);
+
+		execSync(
+			`cp $(npm root -g)/create-mitum-sdk/copies/operations/operation.js ${__dirname}/operations/${s}.js`
+		);
+		execSync(
+			`cp $(npm root -g)/create-mitum-sdk/copies/operations/operation.test.js ${__dirname}/operations/${s}.test.js`
+		);
+
+		replace({
+			regex: "__OP__",
+			replacement: o,
+			paths: [
+				`${__dirname}/operations/${s}.js`,
+				`${__dirname}/operations/${s}.test.js`,
+			],
+			recursive: true,
+			silent: true,
+		});
+
+		replace({
+			regex: "__OPB__",
+			replacement: b,
+			paths: [`${__dirname}/operations/${s}.js`],
+			recursive: true,
+			silent: true,
+		});
+
+		replace({
+			regex: "__OPS__",
+			replacement: s,
+			paths: [`${__dirname}/operations/${s}.test.js`],
+			recursive: true,
+			silent: true,
+		});
+
+		modelPath.push(`${__dirname}/operations/${s}.js`);
+	});
+
+	const m = opModelKey();
+	replace({
+		regex: "__MODEL__",
+		replacement: m,
+		paths: modelPath,
+		recursive: true,
+		silent: true,
+	});
+
+	printLoadBar(65);
+};
+
 const createIndexJs = () => {
 	let imports = "";
 	let classes = "{\n";
 
 	execSync(
-		`cp $(npm root -g)/create-mitum-sdkjs/copies/index.js ${__dirname}/`
+		`cp $(npm root -g)/create-mitum-sdk/copies/index.js ${__dirname}/`
 	);
 
 	operations.forEach((op) => {
+		const k = opKey(op);
+		const s = opSmallKey(op);
+		imports += `import { ${k}Item, ${k}Fact } from "./operations/${s}.js"\n`;
+		classes += `\t${k}Item,\n\t${k}Fact,\n`;
+	});
+	nodeOperations.forEach((op) => {
 		const k = opKey(op);
 		const s = opSmallKey(op);
 		imports += `import { ${k}Item, ${k}Fact } from "./operations/${s}.js"\n`;
@@ -342,7 +432,7 @@ const createIndexJs = () => {
 
 const createReadme = () => {
 	execSync(
-		`cp $(npm root -g)/create-mitum-sdkjs/copies/README.md ${__dirname}/`
+		`cp $(npm root -g)/create-mitum-sdk/copies/README.md ${__dirname}/`
 	);
 
 	replace({
@@ -406,6 +496,10 @@ const createReadme = () => {
 	execSync(`rm ${__dirname}/npm-v.tmp`);
 
 	let indices = "";
+	nodeOperations.forEach((op) => {
+		const s = opSmallKey(op);
+		indices += `|-|[${s}](#${s})|\n`;
+	});
 	operations.forEach((op, idx) => {
 		const s = opSmallKey(op);
 		indices +=
@@ -429,9 +523,10 @@ const createReadme = () => {
 		silent: true,
 	});
 
-	const oplist = operations
+	const nodeOpList = nodeOperations
 		.map((op) => `* ${opSmallKey(op)}`)
 		.join("\n");
+	const oplist = operations.map((op) => `* ${opSmallKey(op)}`).join("\n");
 
 	replace({
 		regex: "__OPERATIONS__",
@@ -440,6 +535,40 @@ const createReadme = () => {
 		recursive: true,
 		silent: true,
 	});
+
+	replace({
+		regex: "__NODE__OPERATIONS__",
+		replacement: nodeOpList,
+		paths: [`${__dirname}/README.md`],
+		recursive: true,
+		silent: true,
+	});
+
+	const nodeReadmes = nodeOperations
+		.map((op) => {
+			const k = opKey(op);
+			const s = opSmallKey(op);
+			const m = opModelKey();
+			const ms = opModelSmallKey();
+
+			let rm = "";
+			rm += `### ${s}\n\n`;
+			rm += `__${s}__ is an operation to ....\n\n`;
+			rm += `\`\`\`js\n`;
+			rm += `import { TimeStamp, ${m}, Operation } from "${ms}-sdk";\n\n`;
+			rm += `const token = new TimeStamp().UTC(); // any unique string\n`;
+			rm += `const nodeAddress = "no0sas";\n`;
+			rm += `const nodePrivate = "KzFERQKNQbPA8cdsX5tCiCZvR4KgBou41cgtPk69XueFbaEjrczbmpr";\n\n`;
+			rm += `const fact = new ${m}.${k}Fact(token);\n\n`;
+			rm += `const memo = ""; // any string\n`;
+			rm += `const operation = new Operation(fact, memo);\n`;
+			rm += `operation.sign(nodePrivate, { node: nodeAddress });\n`;
+			rm += `\`\`\`\n`;
+
+			return rm;
+		})
+		.join("\n")
+		.trimEnd();
 
 	const readmes = operations
 		.map((op) => {
@@ -465,7 +594,16 @@ const createReadme = () => {
 
 			return rm;
 		})
-		.join("\n").trimEnd();
+		.join("\n")
+		.trimEnd();
+
+	replace({
+		regex: "__NODE_OP_READMES__",
+		replacement: nodeReadmes,
+		paths: [`${__dirname}/README.md`],
+		recursive: true,
+		silent: true,
+	});
 
 	replace({
 		regex: "__OP_READMES__",
@@ -475,7 +613,17 @@ const createReadme = () => {
 		silent: true,
 	});
 
-	printLoadBar(80);
+	printLoadBar(85);
+
+	replace({
+		regex: "__LICENSE__",
+		replacement: pkg.license.toUpperCase(),
+		paths: [`${__dirname}/README.md`],
+		recursive: true,
+		silent: true,
+	});
+
+	printLoadBar(90);
 };
 
 run();
