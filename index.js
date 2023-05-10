@@ -33,7 +33,7 @@ const pkg = {
 	devDependencies: {
 		"@babel/core": "^7.21.4",
 		"@babel/plugin-transform-modules-commonjs": "^7.21.2",
-		"@babel/plugin-transform-runtime": "^^7.21.4",
+		"@babel/plugin-transform-runtime": "^7.21.4",
 		"@babel/preset-env": "^7.21.4",
 	},
 };
