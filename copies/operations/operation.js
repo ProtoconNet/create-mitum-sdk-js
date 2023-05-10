@@ -36,7 +36,7 @@ export class __OP__Item extends __MODEL__Item {
 
 export class __OP__Fact extends OperationFact {
 	constructor(token, sender, items) {
-		super(HINT___OPB___OPERATION_FACT, token, sender, token);
+		super(HINT___OPB___OPERATION_FACT, token, sender);
 
 		items.forEach((item) =>
 			assert(
