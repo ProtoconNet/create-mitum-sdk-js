@@ -113,7 +113,7 @@ const inputPackage = () => {
 		.toLowerCase()
 		.replace(model.includes("-") ? /-/gi : /\s/gi, " ");
 	nodeOperations = rl
-		.question(print("node operations", ""))
+		.question(print("node operations (del:',')", ""))
 		.split(",")
 		.filter((op) => op)
 		.map((op) => {
@@ -123,7 +123,7 @@ const inputPackage = () => {
 			return op;
 		});
 	operations = rl
-		.question(print("operations", ""))
+		.question(print("operations (del:',')", ""))
 		.split(",")
 		.filter((op) => op)
 		.map((op) => {
