@@ -26,15 +26,15 @@ const pkg = {
 	author: "",
 	license: "",
 	dependencies: {
-		jest: "^29.0.3",
+		jest: "^29.5.0",
 		bs58: "^5.0.0",
-		"mitum-sdk": "^0.0.1",
+		"mitum-sdk": "^0.1.3",
 	},
 	devDependencies: {
-		"@babel/core": "^7.19.1",
-		"@babel/plugin-transform-modules-commonjs": "^7.18.6",
-		"@babel/plugin-transform-runtime": "^7.19.1",
-		"@babel/preset-env": "^7.19.1",
+		"@babel/core": "^7.21.4",
+		"@babel/plugin-transform-modules-commonjs": "^7.21.2",
+		"@babel/plugin-transform-runtime": "^^7.21.4",
+		"@babel/preset-env": "^7.21.4",
 	},
 };
 
